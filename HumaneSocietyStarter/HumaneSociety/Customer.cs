@@ -8,7 +8,7 @@ namespace HumaneSociety
 {
     class Customer : User
     {
-        Client client;
+        Client client = new Client();
         public override void LogIn()
         {
             if (CheckIfNewUser())
