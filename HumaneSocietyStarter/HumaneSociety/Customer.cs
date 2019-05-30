@@ -86,6 +86,7 @@ namespace HumaneSociety
             {
                 Query.Adopt(animal, client);
                 UserInterface.DisplayUserOptions("Adoption request sent we will hold $75 adoption fee until processed");
+                Console.ReadLine();
             }
         }
 
@@ -265,7 +266,7 @@ namespace HumaneSociety
         {
             List<string> options = new List<string>() { "What would you like to update? (Please enter number of option)", "1: Name", "2: Address", "3: Email", "4: Username", "5: Password", "6. Back" };
             int input = default(int);
-            while (input != 9)
+            while (input != 6)
             {
                 try
                 {

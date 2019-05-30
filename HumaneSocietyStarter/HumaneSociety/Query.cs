@@ -195,15 +195,14 @@ namespace HumaneSociety
             employeeFromDb.Password = employee.Password;
             employeeFromDb.EmployeeNumber = employee.EmployeeNumber;
             employeeFromDb.Email = employee.Email;
-
+            db.SubmitChanges();
         }
 
         internal static void RemoveEmployee(Employee employee)  //delete
         {
             db.Employees.DeleteOnSubmit(employee);
+            db.SubmitChanges();
         }
-
-        //add, read, 
 
         // TODO: Animal CRUD Operations
 
@@ -211,13 +210,13 @@ namespace HumaneSociety
         internal static void AddAnimal(Animal animal)
         {
             db.Animals.InsertOnSubmit(animal);
+            db.SubmitChanges();
         }
 
         internal static Animal GetAnimalByID(int id)
         {
             Animal animal = db.Animals.Where(c => c.AnimalId == id).Single();
             return animal;
-
         }
 
         internal static void UpdateAnimal(Animal animal, Dictionary<int, string> updates)//
@@ -265,16 +264,48 @@ namespace HumaneSociety
         internal static void RemoveAnimal(Animal animal)
         {
             db.Animals.DeleteOnSubmit(animal);
+            db.SubmitChanges();
         }
 
         // TODO: Animal Multi-Trait Search
         internal static IQueryable<Animal> SearchForAnimalByMultipleTraits(Dictionary<int, string> updates) // parameter(s)?
         {
             IQueryable<Animal> animalsToSearch = db.Animals;
-            animalsToSearch = animalsToSearch.Where(a => updates.Values.Equals(db.Categories.Where(c => c.Name == updates.Values.ElementAt(0)).Select(p => p.CategoryId).Single()) && updates.Values.Equals(a.Name) && updates.Values.Equals(a.Weight.ToString()) && updates.Values.Equals(a.Age.ToString()) && updates.Values.Equals(a.Demeanor) && updates.Values.Equals(a.KidFriendly.ToString()) && updates.Values.Equals(a.PetFriendly.ToString()) && updates.Values.Equals(a.Weight.ToString()) && updates.Values.Equals(a.AnimalId.ToString())).AsQueryable();
+            foreach (var entry in updates)
+            {
+                switch (entry.Key)
+                {
+                    case 1:
+                        var species = db.Categories.Where(s => s.Name == entry.Value).Select(p => p.CategoryId).SingleOrDefault();
+                        animalsToSearch = animalsToSearch.Where(p => p.CategoryId == species);
+                        break;
+                    case 2:
+                        animalsToSearch = animalsToSearch.Where(c => c.Name == entry.Value);
+                        break;
+                    case 3:
+                        animalsToSearch = animalsToSearch.Where(c => c.Age.ToString() == entry.Value);
+                        break;
+                    case 4:
+                        animalsToSearch = animalsToSearch.Where(c => c.Demeanor == entry.Value);
+                        break;
+                    case 5:
+                        animalsToSearch = animalsToSearch.Where(c => c.KidFriendly.ToString() == entry.Value);
+                        break;
+                    case 6:
+                        animalsToSearch = animalsToSearch.Where(c => c.PetFriendly.ToString() == entry.Value);
+                        break;
+                    case 7:
+                        animalsToSearch = animalsToSearch.Where(c => c.Weight.ToString() == entry.Value);
+                        break;
+                    case 8:
+                        animalsToSearch = animalsToSearch.Where(c => c.AnimalId.ToString() == entry.Value);
+                        break;
+                    default:
+                        break;
+                }
+            }
             return animalsToSearch;
         }
-
         // TODO: Misc Animal Things
         internal static int GetCategoryId(string categoryName)
         {
@@ -318,6 +349,11 @@ namespace HumaneSociety
             {
                 adoptionToUpdate.ApprovalStatus = "Adopted";
             }
+            else
+            {
+                adoptionToUpdate.ApprovalStatus = "Not Adopted";
+            }
+            db.SubmitChanges();
         }
 
         internal static void RemoveAdoption(int animalId, int clientId)
