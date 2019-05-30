@@ -177,10 +177,47 @@ namespace HumaneSociety
 
         }
 
-        internal static void UpdateAnimal(Animal animal, Dictionary<int, string> updates)
+        internal static void UpdateAnimal(Animal animal, Dictionary<int, string> updates)//
         {
-            throw new NotImplementedException();
-        }
+            Animal animalFromDb = db.Animals.Where(c => c.AnimalId == animal.AnimalId).Single();
+
+            var update = from entry in updates
+                         select entry;
+
+            foreach (var entry in updates)
+            {
+                switch (entry.Key)
+                {
+                    case 1:
+                        animalFromDb.CategoryId = db.Categories.Where(c => c.Name == entry.Value).Select(p => p.CategoryId).Single();
+                        break;
+                    case 2:
+                        animalFromDb.Name = entry.Value;
+                        break;
+                    case 3:
+                        animalFromDb.Age = int.Parse(entry.Value);
+                        break;
+                    case 4:
+                        animalFromDb.Demeanor = entry.Value;
+                        break;
+                    case 5:
+                        animalFromDb.KidFriendly = bool.Parse(entry.Value);
+                        break;
+                    case 6:
+                        animalFromDb.PetFriendly = bool.Parse(entry.Value);
+                        break;
+                    case 7:
+                        animalFromDb.Weight = int.Parse(entry.Value);
+                        break;
+                    case 8:
+                        animalFromDb.AnimalId = int.Parse(entry.Value);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            db.SubmitChanges();
+        }                                          
 
         internal static void RemoveAnimal(Animal animal)
         {
@@ -196,23 +233,31 @@ namespace HumaneSociety
         // TODO: Misc Animal Things
         internal static int GetCategoryId(string categoryName)
         {
-            throw new NotImplementedException();
+            var categoryId = db.Categories.Where(c => c.Name == categoryName).Select(c => c.CategoryId).Single();
+            return categoryId;
         }
         
         internal static Room GetRoom(int animalId)
         {
-            throw new NotImplementedException();
+            Room room = db.Rooms.Where(r => r.AnimalId == animalId).Single();
+            return room;
         }
         
         internal static int GetDietPlanId(string dietPlanName)
         {
-            throw new NotImplementedException();
+            var dietPlanId = db.DietPlans.Where(d => d.Name == dietPlanName).Select(n => n.DietPlanId).Single();
+            return dietPlanId;
         }
 
         // TODO: Adoption CRUD Operations
         internal static void Adopt(Animal animal, Client client)
         {
-            throw new NotImplementedException();
+            Adoption adoption = new Adoption(); //why Adoption not Adoptions ask
+            adoption.ClientId = client.ClientId;
+            adoption.AnimalId = animal.AnimalId;
+            adoption.PaymentCollected = true;
+            db.Adoptions.InsertOnSubmit(adoption);
+            db.SubmitChanges();
         }
 
         internal static IQueryable<Adoption> GetPendingAdoptions()

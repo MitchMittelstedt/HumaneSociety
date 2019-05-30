@@ -188,7 +188,7 @@ namespace HumaneSociety
         public static Dictionary<int, string> EnterSearchCriteria(Dictionary<int, string> searchParameters, string input)
         {
             Console.Clear();
-            switch (input)
+            switch (input)  
             {
                 case "1":
                     searchParameters.Add(1, GetStringData("category", "the animal's"));
