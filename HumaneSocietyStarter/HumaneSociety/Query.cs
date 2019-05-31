@@ -189,6 +189,7 @@ namespace HumaneSociety
         internal static void UpdateEmployee(Employee employee)  //update
         {
             Employee employeeFromDb = db.Employees.Where(c => c.EmployeeId == employee.EmployeeId).Single();
+
             employeeFromDb.FirstName = employee.FirstName;
             employeeFromDb.LastName = employee.LastName;
             employeeFromDb.UserName = employee.UserName;
